@@ -4,6 +4,7 @@ import { fetchMetrics } from './services/api';
 import Header from './components/Header';
 import MetricCard from './components/MetricCard';
 import DateSelector from './components/DateSelector';
+import CampaignSelector from './components/CampaignSelector';
 import Loading from './components/Loading';
 
 function App() {
@@ -19,26 +20,33 @@ function App() {
     custoConversa: 0
   });
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [campaigns, setCampaigns] = useState([]);
+  const [selectedCampaign, setSelectedCampaign] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [rawData, setRawData] = useState([]);
 
   useEffect(() => {
     loadData();
   }, [selectedDate]);
 
   useEffect(() => {
-    // Adiciona/remove classe no body para prevenir scroll durante loading
-    if (isLoading) {
-      document.body.classList.add('loading-active');
-    } else {
-      document.body.classList.remove('loading-active');
+    if (rawData.length > 0) {
+      const filteredData = selectedCampaign
+        ? rawData.filter(item => item.Campanha === selectedCampaign)
+        : rawData;
+      calculateMetrics(filteredData);
     }
-  }, [isLoading]);
+  }, [selectedCampaign, rawData]);
 
   const loadData = async () => {
     setIsLoading(true);
     try {
       const response = await fetchMetrics(selectedDate);
       if (response.status === 'success') {
+        setRawData(response.data);
+        // Extrair campanhas únicas
+        const uniqueCampaigns = [...new Set(response.data.map(item => item.Campanha))];
+        setCampaigns(uniqueCampaigns);
         calculateMetrics(response.data);
       }
     } catch (error) {
@@ -50,6 +58,11 @@ function App() {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
+    setSelectedCampaign(''); // Reset campaign filter when date changes
+  };
+
+  const handleCampaignChange = (campaign) => {
+    setSelectedCampaign(campaign);
   };
 
   const calculateMetrics = (data) => {
@@ -80,11 +93,19 @@ function App() {
       {isLoading && <Loading />}
       <Header />
       <main>
-        <DateSelector 
-          value={selectedDate} 
-          onChange={handleDateChange}
-          disabled={isLoading}
-        />
+        <div className="filters">
+          <DateSelector 
+            value={selectedDate} 
+            onChange={handleDateChange}
+            disabled={isLoading}
+          />
+          <CampaignSelector
+            campaigns={campaigns}
+            selectedCampaign={selectedCampaign}
+            onChange={handleCampaignChange}
+            disabled={isLoading}
+          />
+        </div>
         
         <section className="metrics-list">
           <MetricCard
