@@ -1,5 +1,5 @@
 class API {
-    static BASE_URL = 'https://script.google.com/macros/s/AKfycbx05xA4T91acrvQYRLwsBWMLpHgU19PtWTdnJ9wCbS-uAMd419pKRQqwlFaKAzviENuXg/exec';
+    static BASE_URL = 'https://script.google.com/macros/s/AKfycbz-XOgosqjTIcBuPBSpU7_YkQPYXa9NdkgQU9_FQChDAJrXNeGoPY9pfUGOt14Jy0aS/exec';
 
     static async fetchMetrics(date) {
         try {

@@ -6,6 +6,7 @@ import MetricCard from './components/MetricCard';
 import DateSelector from './components/DateSelector';
 import CampaignSelector from './components/CampaignSelector';
 import Loading from './components/Loading';
+import CreativesList from './components/CreativesList';
 
 function App() {
   const [metrics, setMetrics] = useState({
@@ -19,7 +20,10 @@ function App() {
     cpc: 0,
     custoConversa: 0
   });
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0]
+  });
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +31,7 @@ function App() {
 
   useEffect(() => {
     loadData();
-  }, [selectedDate]);
+  }, [dateRange]);
 
   useEffect(() => {
     if (rawData.length > 0) {
@@ -41,10 +45,9 @@ function App() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetchMetrics(selectedDate);
+      const response = await fetchMetrics(dateRange.startDate, dateRange.endDate);
       if (response.status === 'success') {
         setRawData(response.data);
-        // Extrair campanhas únicas
         const uniqueCampaigns = [...new Set(response.data.map(item => item.Campanha))];
         setCampaigns(uniqueCampaigns);
         calculateMetrics(response.data);
@@ -56,9 +59,12 @@ function App() {
     }
   };
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSelectedCampaign(''); // Reset campaign filter when date changes
+  const handleDateChange = (field, value) => {
+    setDateRange(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    setSelectedCampaign('');
   };
 
   const handleCampaignChange = (campaign) => {
@@ -95,7 +101,8 @@ function App() {
       <main>
         <div className="filters">
           <DateSelector 
-            value={selectedDate} 
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
             onChange={handleDateChange}
             disabled={isLoading}
           />
@@ -163,6 +170,8 @@ function App() {
             format="currency"
           />
         </section>
+
+        <CreativesList data={selectedCampaign ? rawData.filter(item => item.Campanha === selectedCampaign) : rawData} />
       </main>
     </div>
   );
