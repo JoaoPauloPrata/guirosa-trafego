@@ -1,0 +1,27 @@
+/projeto
+  ├── public/
+  │   ├── index.html
+  │   ├── manifest.json
+  │   └── assets/
+  │       ├── icons/
+  │       │   ├── alcance.svg
+  │       │   ├── clicks.svg
+  │       │   ├── conversas.svg
+  │       │   ├── custo-conversa.svg
+  │       │   ├── impressoes.svg
+  │       │   ├── investimento.svg
+  │       │   ├── ctr.svg
+  │       │   ├── cpm.svg
+  │       │   └── cpc.svg
+  │       └── logo.png
+  └── src/
+      ├── components/
+      │   ├── Header.jsx
+      │   ├── MetricCard.jsx
+      │   └── DateSelector.jsx
+      ├── services/
+      │   └── api.js
+      ├── styles/
+      │   └── App.css
+      ├── App.js
+      └── index.js 

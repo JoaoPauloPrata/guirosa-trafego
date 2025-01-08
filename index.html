@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alphatex Analytics</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="theme-color" content="#000000">
+    <!-- Para iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Para Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+    <header class="header">
+        <div class="profile">
+            <img src="assets/logo.png" alt="Alphatex" class="logo">
+            <div class="profile-info">
+                <h1>Alphatex</h1>
+                <p>@alphatextecidos</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="date-selector">
+            <input type="date" id="dateSelector">
+        </div>
+
+        <section class="metrics-list">
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/alcance.svg" alt="Alcance">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Alcance</span>
+                    <strong id="alcance" class="metric-value">0</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/clicks.svg" alt="Clicks no Link">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Clicks no Link</span>
+                    <strong id="clicks" class="metric-value">0</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/conversas.svg" alt="Conversas Iniciadas">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Conversas Iniciadas</span>
+                    <strong id="conversas" class="metric-value">0</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/custo-conversa.svg" alt="Custo por Conversa Iniciada">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Custo por Conversa Iniciada</span>
+                    <strong id="custoConversa" class="metric-value">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/impressoes.svg" alt="Impressões">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Impressões</span>
+                    <strong id="impressoes" class="metric-value">0</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/investimento.svg" alt="Investimento">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Investimento</span>
+                    <strong id="investimento" class="metric-value">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/ctr.svg" alt="Taxa de Clicks (CTR)">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Taxa de Clicks (CTR)</span>
+                    <strong id="ctr" class="metric-value">0%</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/cpm.svg" alt="Custo por Mil Imp. (CPM)">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Custo por Mil Imp. (CPM)</span>
+                    <strong id="cpm" class="metric-value">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <div class="metric-item">
+                <div class="metric-icon">
+                    <img src="assets/icons/cpc.svg" alt="Custo por Click (CPC)">
+                </div>
+                <div class="metric-content">
+                    <span class="metric-label">Custo por Click (CPC)</span>
+                    <strong id="cpc" class="metric-value">R$ 0,00</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="criativos">
+            <h2>Criativos:</h2>
+            <div id="criativosContainer" class="criativos-container">
+                <!-- Criativos serão inseridos via JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
