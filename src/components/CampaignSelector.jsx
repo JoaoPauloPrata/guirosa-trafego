@@ -3,7 +3,7 @@ import React from 'react';
 const CampaignSelector = ({ campaigns, selectedCampaign, onChange, disabled }) => {
   return (
     <div className="campaign-selector">
-      <label htmlFor="campaignFilter">Filtrar por campanha:</label>
+      <h3 className="filter-title">Campanha</h3>
       <select
         id="campaignFilter"
         value={selectedCampaign}

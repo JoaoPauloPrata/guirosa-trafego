@@ -1,25 +1,29 @@
 import React from 'react';
 
 const CreativesList = ({ data }) => {
-  // Agrupa os dados por criativo
+  // Agrupa os dados por título do criativo
   const groupByCreative = data.reduce((acc, item) => {
-    if (!acc[item.Criativo]) {
-      acc[item.Criativo] = {
-        nome: item.Criativo,
+    const creativeTitle = item['Título do Criativo'];
+    if (!acc[creativeTitle]) {
+      acc[creativeTitle] = {
+        nome: creativeTitle,
         alcance: 0,
         clicks: 0,
         conversas: 0,
         impressoes: 0,
         investimento: 0,
-        imagem: 'https://st3.depositphotos.com/1000128/12545/i/450/depositphotos_125457988-stock-photo-two-19-liter-or-5.jpg'
+        plataforma: item.Plataforma,
+        posicionamento: item.Posicionamento,
+        imagem: 'https://drive.google.com/uc?export=view&id=1_SEtTpFYVPKy97GOX9I3GHBWUxyZmk1l'
       };
     }
 
-    acc[item.Criativo].alcance += Number(item.Alcance) || 0;
-    acc[item.Criativo].clicks += Number(item['Clicks no Link']) || 0;
-    acc[item.Criativo].conversas += Number(item['Conversas Iniciadas']) || 0;
-    acc[item.Criativo].impressoes += Number(item['Impressões']) || 0;
-    acc[item.Criativo].investimento += Number(item['Investimento']) || 0;
+    // Soma as métricas para cada criativo
+    acc[creativeTitle].alcance += Number(item.Alcance) || 0;
+    acc[creativeTitle].clicks += Number(item['Clicks no Link']) || 0;
+    acc[creativeTitle].conversas += Number(item['Conversas Iniciadas']) || 0;
+    acc[creativeTitle].impressoes += Number(item['Impressões']) || 0;
+    acc[creativeTitle].investimento += Number(item['Investimento']) || 0;
 
     return acc;
   }, {});
@@ -29,6 +33,15 @@ const CreativesList = ({ data }) => {
     style: 'currency',
     currency: 'BRL'
   }).format(value);
+
+  const calculateCTR = (clicks, impressoes) => {
+    const ctr = impressoes > 0 ? (clicks / impressoes) * 100 : 0;
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'percent',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(ctr / 100);
+  };
 
   return (
     <section className="criativos">
@@ -41,22 +54,30 @@ const CreativesList = ({ data }) => {
             </div>
             <div className="criativo-info">
               <h3>{criativo.nome}</h3>
+              <div className="criativo-detalhes">
+                <span className="plataforma">{criativo.plataforma}</span>
+                <span className="posicionamento">{criativo.posicionamento}</span>
+              </div>
               <div className="criativo-metricas">
                 <div className="criativo-metrica">
                   <span>Alcance</span>
                   <strong>{formatNumber(criativo.alcance)}</strong>
                 </div>
                 <div className="criativo-metrica">
+                  <span>Impressões</span>
+                  <strong>{formatNumber(criativo.impressoes)}</strong>
+                </div>
+                <div className="criativo-metrica">
                   <span>Clicks</span>
                   <strong>{formatNumber(criativo.clicks)}</strong>
                 </div>
                 <div className="criativo-metrica">
-                  <span>Conversas</span>
-                  <strong>{formatNumber(criativo.conversas)}</strong>
+                  <span>CTR</span>
+                  <strong>{calculateCTR(criativo.clicks, criativo.impressoes)}</strong>
                 </div>
                 <div className="criativo-metrica">
-                  <span>Impressões</span>
-                  <strong>{formatNumber(criativo.impressoes)}</strong>
+                  <span>Conversas</span>
+                  <strong>{formatNumber(criativo.conversas)}</strong>
                 </div>
                 <div className="criativo-metrica">
                   <span>Investimento</span>

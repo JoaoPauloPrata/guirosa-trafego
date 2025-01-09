@@ -1,4 +1,4 @@
-const BASE_URL = 'https://script.google.com/macros/s/AKfycbwhrU5I2gXn2QqXBIhZlcnJC4PRWlU8Y7c9-UI20F6t1KC2D4CBA9kL-Z6EbnBNnuio/exec';
+const BASE_URL = 'https://script.google.com/macros/s/AKfycbxwJrMUaJWVImTnub_CD60sm6HXSYJE36P3SZdRkJA46G2Yw_lV3aVQuc_GBQe2ErfE/exec';
 
 export const fetchMetrics = async (startDate, endDate) => {
   try {
