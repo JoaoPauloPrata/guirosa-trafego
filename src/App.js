@@ -73,7 +73,9 @@ function App() {
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
   };
 
