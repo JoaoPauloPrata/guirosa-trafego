@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CreativesList = ({ data }) => {
+const CreativesList = ({ data, creativeUrls }) => {
   // Agrupa os dados por título do criativo
   const groupByCreative = data.reduce((acc, item) => {
     const creativeTitle = item['Título do Criativo'];
@@ -14,7 +14,7 @@ const CreativesList = ({ data }) => {
         investimento: 0,
         plataforma: item.Plataforma,
         posicionamento: item.Posicionamento,
-        imagem: 'https://drive.google.com/uc?export=view&id=1_SEtTpFYVPKy97GOX9I3GHBWUxyZmk1l'
+        imagem: creativeUrls[creativeTitle] || 'https://i.imgur.com/q43FZTb.png'
       };
     }
 

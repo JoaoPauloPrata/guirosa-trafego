@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles/App.css';
-import { fetchMetrics } from './services/api';
+import { fetchMetrics, fetchCreativeUrls } from './services/api';
 import Header from './components/Header';
 import MetricCard from './components/MetricCard';
 import DateSelector from './components/DateSelector';
@@ -35,6 +35,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [rawData, setRawData] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [creativeUrls, setCreativeUrls] = useState({});
 
   useEffect(() => {
     loadData();
@@ -46,6 +47,10 @@ function App() {
       calculateMetrics(filteredData);
     }
   }, [selectedCampaign, selectedCreative, selectedPlatform, rawData]);
+
+  useEffect(() => {
+    loadCreativeUrls();
+  }, []);
 
   const filterData = (data) => {
     return data.filter(item => {
@@ -76,6 +81,21 @@ function App() {
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
+    }
+  };
+
+  const loadCreativeUrls = async () => {
+    try {
+      const response = await fetchCreativeUrls();
+      if (response.status === 'success') {
+        const urlMap = response.data.reduce((acc, item) => {
+          acc[item['Titulo do Criativo']] = item.UrlImage;
+          return acc;
+        }, {});
+        setCreativeUrls(urlMap);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar URLs dos criativos:', error);
     }
   };
 
@@ -223,7 +243,8 @@ function App() {
             data={selectedCampaign 
               ? rawData.filter(item => item.Campanha === selectedCampaign) 
               : rawData
-            } 
+            }
+            creativeUrls={creativeUrls}
           />
         </div>
       </main>
