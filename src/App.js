@@ -86,14 +86,12 @@ function App() {
 
   const loadCreativeUrls = async () => {
     try {
-      const response = await fetchCreativeUrls();
-      if (response.status === 'success') {
-        const urlMap = response.data.reduce((acc, item) => {
-          acc[item['Titulo do Criativo']] = item.UrlImage;
-          return acc;
-        }, {});
-        setCreativeUrls(urlMap);
-      }
+      const urls = await fetchCreativeUrls();
+      const urlsMap = urls.reduce((acc, item) => {
+        acc[item['Titulo do Criativo']] = item.UrlImage;
+        return acc;
+      }, {});
+      setCreativeUrls(urlsMap);
     } catch (error) {
       console.error('Erro ao carregar URLs dos criativos:', error);
     }
