@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './styles/App.css';
 import { fetchMetrics, fetchCreativeUrls } from './services/api';
 import Header from './components/Header';
@@ -9,6 +10,9 @@ import CreativeSelector from './components/CreativeSelector';
 import PlatformSelector from './components/PlatformSelector';
 import Loading from './components/Loading';
 import CreativesList from './components/CreativesList';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import ReportPage from './components/ReportPage';
 
 function App() {
   const [metrics, setMetrics] = useState({
@@ -36,6 +40,15 @@ function App() {
   const [rawData, setRawData] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [creativeUrls, setCreativeUrls] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -146,109 +159,27 @@ function App() {
     setMetrics({ ...totals, ctr, cpm, cpc, custoConversa });
   };
 
-  return (
-    <div className="App">
-      {isLoading && <Loading />}
-      <Header />
-      <button className="sidebar-toggle" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-        {isSidebarOpen ? '×' : '☰'}
-      </button>
-      <main>
-        <div className={`filters ${isSidebarOpen ? 'open' : ''}`}>
-          <DateSelector 
-            startDate={dateRange.startDate}
-            endDate={dateRange.endDate}
-            onChange={handleDateChange}
-            disabled={isLoading}
-          />
-          <CampaignSelector
-            campaigns={campaigns}
-            selectedCampaign={selectedCampaign}
-            onChange={handleCampaignChange}
-            disabled={isLoading}
-          />
-          <CreativeSelector
-            creatives={creatives}
-            selectedCreative={selectedCreative}
-            onChange={handleCreativeChange}
-            disabled={isLoading}
-          />
-          <PlatformSelector
-            platforms={platforms}
-            selectedPlatform={selectedPlatform}
-            onChange={handlePlatformChange}
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="content-area">
-          <section className="metrics-list">
-            <MetricCard
-              icon="alcance"
-              label="Alcance"
-              value={metrics.alcance}
-              format="number"
-            />
-            <MetricCard
-              icon="clicks"
-              label="Clicks no Link"
-              value={metrics.clicks}
-              format="number"
-            />
-            <MetricCard
-              icon="conversas"
-              label="Conversas Iniciadas"
-              value={metrics.conversas}
-              format="number"
-            />
-            <MetricCard
-              icon="custoconversa"
-              label="Custo por Conversa Iniciada"
-              value={metrics.custoConversa}
-              format="currency"
-            />
-            <MetricCard
-              icon="impressoes"
-              label="Impressões"
-              value={metrics.impressoes}
-              format="number"
-            />
-            <MetricCard
-              icon="investimento"
-              label="Investimento"
-              value={metrics.investimento}
-              format="currency"
-            />
-            <MetricCard
-              icon="ctr"
-              label="Taxa de Clicks (CTR)"
-              value={metrics.ctr}
-              format="percent"
-            />
-            <MetricCard
-              icon="cpm"
-              label="Custo por Mil Imp. (CPM)"
-              value={metrics.cpm}
-              format="currency"
-            />
-            <MetricCard
-              icon="cpc"
-              label="Custo por Click (CPC)"
-              value={metrics.cpc}
-              format="currency"
-            />
-          </section>
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
 
-          <CreativesList 
-            data={selectedCampaign 
-              ? rawData.filter(item => item.Campanha === selectedCampaign) 
-              : rawData
-            }
-            creativeUrls={creativeUrls}
-          />
-        </div>
-      </main>
-    </div>
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
+
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Dashboard onLogout={handleLogout} />} />
+        <Route path="/:reportId" element={<ReportPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   );
 }
 

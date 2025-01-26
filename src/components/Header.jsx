@@ -1,14 +1,19 @@
 import React from 'react';
-import logo from '../assets/logo.png';
+import '../styles/Header.css';
 
-const Header = () => {
+const Header = ({ client, onBack }) => {
   return (
     <header className="header">
       <div className="profile">
-        <img src={logo} alt="Logo" className="logo" />
+        {onBack && (
+          <button className="back-button" onClick={onBack}>
+            ←
+          </button>
+        )}
+        <img src={client?.logo} alt={client?.name} className="logo" />
         <div className="profile-info">
-          <h1>Fractal</h1>
-          <p>@Fractal</p>
+          <h1>{client?.name}</h1>
+          <p>@{client?.name.toLowerCase().replace(/\s+/g, '')}</p>
         </div>
       </div>
     </header>
