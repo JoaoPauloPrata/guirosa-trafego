@@ -45,6 +45,12 @@ const ReportPage = () => {
   }, [reportId]);
 
   useEffect(() => {
+    if (reportConfig) {
+      loadData(reportConfig.reportGetUrl);
+    }
+  }, [dateRange.startDate, dateRange.endDate]);
+
+  useEffect(() => {
     if (rawData.length > 0) {
       const filteredData = filterData(rawData);
       calculateMetrics(filteredData);
@@ -70,6 +76,7 @@ const ReportPage = () => {
       const config = await fetchReportConfig(reportId);
       setReportConfig(config);
       await loadData(config.reportGetUrl);
+
     } catch (error) {
       console.error('Erro ao carregar configuração do relatório:', error);
       navigate('/');
@@ -82,12 +89,19 @@ const ReportPage = () => {
     setIsLoading(true);
     try {
       const response = await fetchMetrics(reportUrl, dateRange.startDate, dateRange.endDate);
+
+     
       if (response.status === 'success') {
+
+      
+
+
         setRawData(response.data);
         const uniqueCampaigns = [...new Set(response.data.map(item => item.Campanha))];
         const uniqueCreatives = [...new Set(response.data.map(item => item['Título do Criativo']))];
         const uniquePlatforms = [...new Set(response.data.map(item => item.Plataforma))];
         setCampaigns(uniqueCampaigns);
+
         setCreatives(uniqueCreatives);
         setPlatforms(uniquePlatforms);
         calculateMetrics(response.data);
@@ -123,9 +137,6 @@ const ReportPage = () => {
       ...prev,
       [field]: value
     }));
-    setSelectedCampaign('');
-    setSelectedCreative('');
-    setSelectedPlatform('');
   };
 
   const handleCampaignChange = (campaign) => {

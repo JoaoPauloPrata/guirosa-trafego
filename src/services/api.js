@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://goodash-825756149287.us-central1.run.app/api';
+// const BASE_URL = 'https://goodash-825756149287.us-central1.run.app/api';
+const BASE_URL = 'http://localhost:5079/api';
+
 
 export const login = async (login, password) => {
   try {
@@ -83,16 +85,21 @@ export const deleteClientReport = async (id) => {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
     });
-    return await response.json();
+    if(response.status >= 200 && response.status < 300){
+      return true;
+    }
+    return false;
+
   } catch (error) {
     console.error('Erro ao deletar relatório:', error);
     throw error;
   }
+
 };
 
 export const fetchReportConfig = async (reportId) => {
   try {
-    const response = await fetch(`${BASE_URL}/ClientReport/${reportId}`);
+    const response = await fetch(`${BASE_URL}/PublicView/${reportId}`);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -105,6 +112,7 @@ export const fetchMetrics = async (reportUrl, startDate, endDate) => {
   try {
     const response = await fetch(`${reportUrl}?action=getData&startDate=${startDate}&endDate=${endDate}`);
     const data = await response.json();
+    console.log("teste",data);
     return data;
   } catch (error) {
     console.error('Erro ao buscar métricas:', error);
@@ -119,6 +127,20 @@ export const fetchCreativeUrls = async (reportUrl) => {
     return data;
   } catch (error) {
     console.error('Erro ao buscar URLs dos criativos:', error);
+    throw error;
+  }
+};
+
+export const getAllClientReports = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/ClientReport`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar relatórios:', error);
     throw error;
   }
 }; 

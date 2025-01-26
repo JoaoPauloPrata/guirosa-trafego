@@ -1,49 +1,130 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAllClientReports, createClientReport, deleteClientReport } from '../services/api';
 import '../styles/Dashboard.css';
+import Loading from './Loading';
 
-const Dashboard = ({ onSelectClient }) => {
-  const [clients, setClients] = useState([]);
+const Dashboard = ({ onLogout }) => {
+  const navigate = useNavigate();
+  const [reports, setReports] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAddingClient, setIsAddingClient] = useState(false);
+  const [error, setError] = useState('');
   const [newClient, setNewClient] = useState({
-    name: '',
-    logo: '',
-    apiUrl: ''
+    clientName: '',
+    reportName: '',
+    reportGetUrl: '',
+    logoUrl: ''
   });
 
-  const handleAddClient = (e) => {
-    e.preventDefault();
-    setClients([...clients, { ...newClient, id: Date.now() }]);
-    setNewClient({ name: '', logo: '', apiUrl: '' });
-    setIsAddingClient(false);
+  useEffect(() => {
+    loadReports();
+  }, []);
+
+  const loadReports = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getAllClientReports();
+      setReports(data);
+    } catch (error) {
+      setError('Erro ao carregar relatórios');
+      console.error('Erro ao carregar relatórios:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteClient = (id) => {
-    setClients(clients.filter(client => client.id !== id));
+  const handleAddClient = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await createClientReport(newClient);
+      await loadReports();
+      setNewClient({
+        clientName: '',
+        reportName: '',
+        reportGetUrl: '',
+        logoUrl: ''
+      });
+      setIsAddingClient(false);
+    } catch (error) {
+      setError('Erro ao adicionar cliente');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleOpenNewTab = (report) => {
+    const path = `/report/${report.id}`;
+    window.open(window.location.origin + path, '_blank');
+};
+  const handleDeleteClient = async (id) => {
+    if (window.confirm('Tem certeza que deseja excluir este relatório?')) {
+      setIsLoading(true);
+      try {
+        await deleteClientReport(id);
+        await loadReports();
+      } catch (error) {
+        setError('Erro ao deletar relatório');
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   return (
     <div className="dashboard-container">
+      {isLoading && <Loading />}
+      
       <header className="dashboard-header">
-        <h1>Gerenciamento de Clientes</h1>
-        <button 
-          className="add-client-button"
-          onClick={() => setIsAddingClient(true)}
-        >
-          Adicionar Cliente
-        </button>
+        <div className="header-content">
+          <h1>Gerenciamento de Relatórios</h1>
+          <div className="header-actions">
+            <button 
+              className="add-client-button"
+              onClick={() => setIsAddingClient(true)}
+            >
+              Adicionar Relatório
+            </button>
+            <button 
+              className="logout-button"
+              onClick={onLogout}
+            >
+              Sair
+            </button>
+          </div>
+        </div>
+        {error && <div className="error-message">{error}</div>}
       </header>
 
       {isAddingClient && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>Adicionar Novo Cliente</h2>
+            <h2>Adicionar Novo Relatório</h2>
             <form onSubmit={handleAddClient}>
               <div className="form-group">
                 <label>Nome do Cliente</label>
                 <input
                   type="text"
-                  value={newClient.name}
-                  onChange={(e) => setNewClient({...newClient, name: e.target.value})}
+                  value={newClient.clientName}
+                  onChange={(e) => setNewClient({...newClient, clientName: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Nome do Relatório</label>
+                <input
+                  type="text"
+                  value={newClient.reportName}
+                  onChange={(e) => setNewClient({...newClient, reportName: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>URL do Relatório</label>
+                <input
+                  type="url"
+                  value={newClient.reportGetUrl}
+                  onChange={(e) => setNewClient({...newClient, reportGetUrl: e.target.value})}
                   required
                 />
               </div>
@@ -51,25 +132,18 @@ const Dashboard = ({ onSelectClient }) => {
                 <label>URL da Logo</label>
                 <input
                   type="url"
-                  value={newClient.logo}
-                  onChange={(e) => setNewClient({...newClient, logo: e.target.value})}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>URL da API</label>
-                <input
-                  type="url"
-                  value={newClient.apiUrl}
-                  onChange={(e) => setNewClient({...newClient, apiUrl: e.target.value})}
-                  required
+                  value={newClient.logoUrl}
+                  onChange={(e) => setNewClient({...newClient, logoUrl: e.target.value})}
                 />
               </div>
               <div className="modal-buttons">
-                <button type="submit">Salvar</button>
+                <button type="submit" disabled={isLoading}>
+                  {isLoading ? 'Salvando...' : 'Salvar'}
+                </button>
                 <button 
                   type="button" 
                   onClick={() => setIsAddingClient(false)}
+                  disabled={isLoading}
                 >
                   Cancelar
                 </button>
@@ -80,17 +154,23 @@ const Dashboard = ({ onSelectClient }) => {
       )}
 
       <div className="clients-grid">
-        {clients.map(client => (
-          <div key={client.id} className="client-card">
-            <img src={client.logo} alt={client.name} className="client-logo" />
-            <h3>{client.name}</h3>
+        {reports.map(report => (
+          <div key={report.id} className="client-card">
+            <img 
+              src={report.logoUrl || 'https://via.placeholder.com/100'} 
+              alt={report.clientName} 
+              className="client-logo" 
+            />
+            <h3>{report.clientName}</h3>
+            <p className="report-name">{report.reportName}</p>
             <div className="client-actions">
-              <button onClick={() => onSelectClient(client)}>
+              <button onClick={() => handleOpenNewTab(report)}>
                 Ver Relatório
               </button>
               <button 
+
                 className="delete-button"
-                onClick={() => handleDeleteClient(client.id)}
+                onClick={() => handleDeleteClient(report.id)}
               >
                 Excluir
               </button>

@@ -176,7 +176,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Dashboard onLogout={handleLogout} />} />
-        <Route path="/:reportId" element={<ReportPage />} />
+        <Route path="/report/:reportId" element={<ReportPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
