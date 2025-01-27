@@ -45,14 +45,25 @@ export const getClientReport = async (id) => {
 
 export const createClientReport = async (clientData) => {
   try {
+    const formData = new FormData();
+    formData.append('clientName', clientData.clientName);
+    formData.append('reportName', clientData.reportName);
+    formData.append('reportGetUrl', clientData.reportGetUrl);
+    formData.append('logoFile', clientData.logoFile);
+
     const response = await fetch(`${BASE_URL}/ClientReport`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify(clientData),
+      body: formData
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erro ao criar relatório');
+    }
+
     return await response.json();
   } catch (error) {
     console.error('Erro ao criar relatório:', error);

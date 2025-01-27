@@ -14,8 +14,9 @@ const Dashboard = ({ onLogout }) => {
     clientName: '',
     reportName: '',
     reportGetUrl: '',
-    logoUrl: ''
+    logoFile: null
   });
+  const [previewLogo, setPreviewLogo] = useState(null);
 
   useEffect(() => {
     loadReports();
@@ -34,29 +35,61 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewClient({...newClient, logoFile: file});
+      // Criar preview da imagem
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewLogo(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddClient = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
+    
+    console.log('Dados do formulário:', newClient); // Debug
+
     try {
-      await createClientReport(newClient);
-      await loadReports();
-      setNewClient({
-        clientName: '',
-        reportName: '',
-        reportGetUrl: '',
-        logoUrl: ''
-      });
-      setIsAddingClient(false);
+      // Validar se todos os campos necessários estão preenchidos
+      if (!newClient.clientName || !newClient.reportName || !newClient.reportGetUrl || !newClient.logoFile) {
+        throw new Error('Por favor, preencha todos os campos');
+      }
+
+      const response = await createClientReport(newClient);
+      console.log('Resposta da API:', response); // Debug
+      
+      if (response) {
+        await loadReports(); // Recarrega a lista de relatórios
+        setNewClient({
+          clientName: '',
+          reportName: '',
+          reportGetUrl: '',
+          logoFile: null
+        });
+        setPreviewLogo(null);
+        setIsAddingClient(false);
+      } else {
+        throw new Error('Erro ao criar relatório');
+      }
     } catch (error) {
-      setError('Erro ao adicionar cliente');
+      console.error('Erro detalhado:', error); // Debug detalhado
+      setError(error.message || 'Erro ao adicionar cliente');
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleOpenNewTab = (report) => {
     const path = `/report/${report.id}`;
     window.open(window.location.origin + path, '_blank');
-};
+  };
+
   const handleDeleteClient = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este relatório?')) {
       setIsLoading(true);
@@ -128,12 +161,23 @@ const Dashboard = ({ onLogout }) => {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label>URL da Logo</label>
+              <div className="form-group logo-upload">
+                <label>Logo do Cliente</label>
+                <div className="logo-preview-container">
+                  {previewLogo && (
+                    <img 
+                      src={previewLogo} 
+                      alt="Preview" 
+                      className="logo-preview"
+                    />
+                  )}
+                </div>
                 <input
-                  type="url"
-                  value={newClient.logoUrl}
-                  onChange={(e) => setNewClient({...newClient, logoUrl: e.target.value})}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  className="file-input"
+                  required
                 />
               </div>
               <div className="modal-buttons">
@@ -168,7 +212,6 @@ const Dashboard = ({ onLogout }) => {
                 Ver Relatório
               </button>
               <button 
-
                 className="delete-button"
                 onClick={() => handleDeleteClient(report.id)}
               >
