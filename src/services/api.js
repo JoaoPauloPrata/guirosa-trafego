@@ -3,7 +3,6 @@ import axios from 'axios';
 const BASE_URL = 'https://goodash-825756149287.us-central1.run.app/api';
 //const BASE_URL = 'http://localhost:5079/api';
 
-
 export const login = async (login, password) => {
   try {
     const response = await axios.post(`${BASE_URL}/auth/login`, {
