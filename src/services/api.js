@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { handleUnauthorized } from './auth';
 
-//const BASE_URL = 'https://goodash-825756149287.us-central1.run.app/api';
-const BASE_URL = 'http://localhost:5079/api';
+const BASE_URL = 'https://goodash-825756149287.us-central1.run.app/api';
+//const BASE_URL = 'http://localhost:5079/api';
 
 export const login = async (login, password) => {
   try {
