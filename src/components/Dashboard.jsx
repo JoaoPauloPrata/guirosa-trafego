@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAllClientReports, createClientReport, deleteClientReport } from '../services/api';
 import '../styles/Dashboard.css';
 import Loading from './Loading';
+import ErrorPopup from './ErrorPopup';
 
 const Dashboard = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -104,14 +105,23 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
+  const handleError = (message) => {
+    setError(message);
+  };
+
+  const clearError = () => {
+    setError('');
+  };
+
   return (
     <div className="dashboard-container">
       {isLoading && <Loading />}
+      {error && <ErrorPopup message={error} onClose={clearError} />}
       
-      <header className="dashboard-header">
-        <div className="header-content">
-          <h1>Gerenciamento de Relatórios</h1>
-          <div className="header-actions">
+      <nav className="top-nav">
+        <div className="nav-content">
+          <h1>Gerenciar Relatórios</h1>
+          <div className="nav-actions">
             <button 
               className="add-client-button"
               onClick={() => setIsAddingClient(true)}
@@ -126,100 +136,101 @@ const Dashboard = ({ onLogout }) => {
             </button>
           </div>
         </div>
-        {error && <div className="error-message">{error}</div>}
-      </header>
+      </nav>
 
-      {isAddingClient && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Adicionar Novo Relatório</h2>
-            <form onSubmit={handleAddClient}>
-              <div className="form-group">
-                <label>Nome do Cliente</label>
-                <input
-                  type="text"
-                  value={newClient.clientName}
-                  onChange={(e) => setNewClient({...newClient, clientName: e.target.value})}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Nome do Relatório</label>
-                <input
-                  type="text"
-                  value={newClient.reportName}
-                  onChange={(e) => setNewClient({...newClient, reportName: e.target.value})}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>URL do Relatório</label>
-                <input
-                  type="url"
-                  value={newClient.reportGetUrl}
-                  onChange={(e) => setNewClient({...newClient, reportGetUrl: e.target.value})}
-                  required
-                />
-              </div>
-              <div className="form-group logo-upload">
-                <label>Logo do Cliente</label>
-                <div className="logo-preview-container">
-                  {previewLogo && (
-                    <img 
-                      src={previewLogo} 
-                      alt="Preview" 
-                      className="logo-preview"
-                    />
-                  )}
+      <div className="dashboard-content">
+        {isAddingClient && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h2>Adicionar Novo Relatório</h2>
+              <form onSubmit={handleAddClient}>
+                <div className="form-group">
+                  <label>Nome do Cliente</label>
+                  <input
+                    type="text"
+                    value={newClient.clientName}
+                    onChange={(e) => setNewClient({...newClient, clientName: e.target.value})}
+                    required
+                  />
                 </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  className="file-input"
-                  required
-                />
-              </div>
-              <div className="modal-buttons">
-                <button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Salvando...' : 'Salvar'}
-                </button>
-                <button 
-                  type="button" 
-                  onClick={() => setIsAddingClient(false)}
-                  disabled={isLoading}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <div className="clients-grid">
-        {reports.map(report => (
-          <div key={report.id} className="client-card">
-            <img 
-              src={report.logoUrl || 'https://via.placeholder.com/100'} 
-              alt={report.clientName} 
-              className="client-logo" 
-            />
-            <h3>{report.clientName}</h3>
-            <p className="report-name">{report.reportName}</p>
-            <div className="client-actions">
-              <button onClick={() => handleOpenNewTab(report)}>
-                Ver Relatório
-              </button>
-              <button 
-                className="delete-button"
-                onClick={() => handleDeleteClient(report.id)}
-              >
-                Excluir
-              </button>
+                <div className="form-group">
+                  <label>Nome do Relatório</label>
+                  <input
+                    type="text"
+                    value={newClient.reportName}
+                    onChange={(e) => setNewClient({...newClient, reportName: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>URL do Relatório - (Link para GET do APP SCRIPTS)</label>
+                  <input
+                    type="url"
+                    value={newClient.reportGetUrl}
+                    onChange={(e) => setNewClient({...newClient, reportGetUrl: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="form-group logo-upload">
+                  <label>Logo do Cliente</label>
+                  <div className="logo-preview-container">
+                    {previewLogo && (
+                      <img 
+                        src={previewLogo} 
+                        alt="Preview" 
+                        className="logo-preview"
+                      />
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    className="file-input"
+                    required
+                  />
+                </div>
+                <div className="modal-buttons">
+                  <button type="submit" disabled={isLoading}>
+                    {isLoading ? 'Salvando...' : 'Salvar'}
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsAddingClient(false)}
+                    disabled={isLoading}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        ))}
+        )}
+
+        <div className="clients-grid">
+          {reports.map(report => (
+            <div key={report.id} className="client-card">
+              <img 
+                src={report.logoUrl || 'https://via.placeholder.com/100'} 
+                alt={report.clientName} 
+                className="client-logo" 
+              />
+              <h3>{report.clientName}</h3>
+              <p className="report-name">{report.reportName}</p>
+              <div className="client-actions">
+                <button onClick={() => handleOpenNewTab(report)}>
+                  Ver Relatório
+                </button>
+                <button 
+                  className="delete-button"
+                  onClick={() => handleDeleteClient(report.id)}
+                >
+                  Excluir
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

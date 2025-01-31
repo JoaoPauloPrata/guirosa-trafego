@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { handleUnauthorized } from './auth';
 
 //const BASE_URL = 'https://goodash-825756149287.us-central1.run.app/api';
 const BASE_URL = 'http://localhost:5079/api';
@@ -42,6 +43,14 @@ export const getClientReport = async (id) => {
   }
 };
 
+const handleResponse = async (response) => {
+  if (response.status === 401) {
+    handleUnauthorized();
+    throw new Error('Sessão expirada. Por favor, faça login novamente.');
+  }
+  return response;
+};
+
 export const createClientReport = async (clientData) => {
   try {
     const formData = new FormData();
@@ -57,12 +66,7 @@ export const createClientReport = async (clientData) => {
       },
       body: formData
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Erro ao criar relatório');
-    }
-
+    await handleResponse(response);
     return await response.json();
   } catch (error) {
     console.error('Erro ao criar relatório:', error);
@@ -95,16 +99,12 @@ export const deleteClientReport = async (id) => {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
     });
-    if(response.status >= 200 && response.status < 300){
-      return true;
-    }
-    return false;
-
+    await handleResponse(response);
+    return response.ok;
   } catch (error) {
     console.error('Erro ao deletar relatório:', error);
     throw error;
   }
-
 };
 
 export const fetchReportConfig = async (reportId) => {
@@ -148,6 +148,7 @@ export const getAllClientReports = async () => {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
     });
+    await handleResponse(response);
     return await response.json();
   } catch (error) {
     console.error('Erro ao buscar relatórios:', error);
