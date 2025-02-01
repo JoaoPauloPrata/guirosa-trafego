@@ -74,9 +74,16 @@ const ReportPage = () => {
     try {
       setIsLoading(true);
       const config = await fetchReportConfig(reportId);
+      
+      const firstDate = config.firstDate.split('T')[0];
+      
+      setDateRange(prev => ({
+        ...prev,
+        startDate: firstDate
+      }));
+      
       setReportConfig(config);
       await loadData(config.reportGetUrl);
-
     } catch (error) {
       console.error('Erro ao carregar configuração do relatório:', error);
       navigate('/');
@@ -182,9 +189,10 @@ const ReportPage = () => {
       <Header 
         client={{
           name: reportConfig?.clientName || '',
-          logo: reportConfig?.logo || ''
+          logo: reportConfig?.logoUrl || '',
+          defaultColor: reportConfig?.defaultColor || '#000000',
+          textColor: reportConfig?.textColor || '#FFFFFF'
         }} 
-        onBack={() => navigate('/')} 
       />
       <button className="sidebar-toggle" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
         {isSidebarOpen ? '×' : '☰'}
@@ -196,6 +204,7 @@ const ReportPage = () => {
             endDate={dateRange.endDate}
             onChange={handleDateChange}
             disabled={isLoading}
+            minDate={reportConfig?.firstDate.split('T')[0]}
           />
           <CampaignSelector
             campaigns={campaigns}

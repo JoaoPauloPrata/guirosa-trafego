@@ -58,6 +58,8 @@ export const createClientReport = async (clientData) => {
     formData.append('reportName', clientData.reportName);
     formData.append('reportGetUrl', clientData.reportGetUrl);
     formData.append('logoFile', clientData.logoFile);
+    formData.append('defaultColor', clientData.defaultColor);
+    formData.append('textColor', clientData.textColor);
 
     const response = await fetch(`${BASE_URL}/ClientReport`, {
       method: 'POST',

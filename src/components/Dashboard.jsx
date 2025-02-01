@@ -15,7 +15,9 @@ const Dashboard = ({ onLogout }) => {
     clientName: '',
     reportName: '',
     reportGetUrl: '',
-    logoFile: null
+    logoFile: null,
+    defaultColor: '#000000',
+    textColor: '#FFFFFF'
   });
   const [previewLogo, setPreviewLogo] = useState(null);
 
@@ -71,7 +73,9 @@ const Dashboard = ({ onLogout }) => {
           clientName: '',
           reportName: '',
           reportGetUrl: '',
-          logoFile: null
+          logoFile: null,
+          defaultColor: '#000000',
+          textColor: '#FFFFFF'
         });
         setPreviewLogo(null);
         setIsAddingClient(false);
@@ -189,6 +193,38 @@ const Dashboard = ({ onLogout }) => {
                     className="file-input"
                     required
                   />
+                </div>
+                <div className="form-group color-picker">
+                  <label>Cores do Tema</label>
+                  <div className="colors-container">
+                    <div className="color-field">
+                      <label>Cor do Fundo</label>
+                      <div className="color-input-container">
+                        <input
+                          type="color"
+                          value={newClient.defaultColor}
+                          onChange={(e) => setNewClient({...newClient, defaultColor: e.target.value})}
+                          className="color-input"
+                        />
+                        <span className="color-value">{newClient.defaultColor}</span>
+                      </div>
+                      <p className="color-helper">Cor da barra superior do relatório</p>
+                    </div>
+
+                    <div className="color-field">
+                      <label>Cor do Texto</label>
+                      <div className="color-input-container">
+                        <input
+                          type="color"
+                          value={newClient.textColor}
+                          onChange={(e) => setNewClient({...newClient, textColor: e.target.value})}
+                          className="color-input"
+                        />
+                        <span className="color-value">{newClient.textColor}</span>
+                      </div>
+                      <p className="color-helper">Cor do texto na barra superior</p>
+                    </div>
+                  </div>
                 </div>
                 <div className="modal-buttons">
                   <button type="submit" disabled={isLoading}>

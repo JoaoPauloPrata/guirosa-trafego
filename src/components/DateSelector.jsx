@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DateSelector = ({ startDate, endDate, onChange, disabled }) => {
+const DateSelector = ({ startDate, endDate, onChange, disabled, minDate }) => {
   return (
     <div className="date-selector">
       <h3 className="filter-title">Período</h3>
@@ -13,6 +13,7 @@ const DateSelector = ({ startDate, endDate, onChange, disabled }) => {
             value={startDate}
             onChange={(e) => onChange('startDate', e.target.value)}
             disabled={disabled}
+            min={minDate}
           />
         </div>
         <div className="date-field">
